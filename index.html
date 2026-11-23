@@ -8,47 +8,125 @@
 <meta name="referrer" content="no-referrer">
 <title>Composio AI Product Ops · 100-App Toolkit Research & Verification</title>
 <style>
-:root {
-  --bg: #0b0f19;
-  --bg-surface: #111827;
-  --bg-card: #162032;
-  --bg-card-hover: #1c2940;
-  --fg: #f3f4f6;
+/* ─── PALETTES: 4 SELECTABLE SCHEMES ─── */
+
+/* 1. Default: Composio Sunset Obsidian */
+:root, [data-theme="composio"] {
+  --bg: #090a0f;
+  --bg-surface: #11131c;
+  --bg-card: #151824;
+  --bg-card-hover: #1c2032;
+  --fg: #f8fafc;
   --fg-muted: #94a3b8;
   --fg-subtle: #64748b;
-  --border: #1e293b;
-  --border-focus: #3b82f6;
-  --primary: #3b82f6;
-  --primary-light: #60a5fa;
-  --primary-glow: rgba(59, 130, 246, 0.15);
-  --accent: #8b5cf6;
+  --border: #23273c;
+  --border-focus: #f97316;
+  --primary: #f97316;
+  --primary-light: #fb923c;
+  --primary-glow: rgba(249, 115, 22, 0.15);
+  --accent: #a855f7;
   --ok: #10b981;
-  --ok-bg: rgba(16, 185, 129, 0.12);
+  --ok-bg: rgba(16, 185, 129, 0.14);
   --warn: #f59e0b;
-  --warn-bg: rgba(245, 158, 11, 0.12);
-  --bad: #ef4444;
-  --bad-bg: rgba(239, 68, 68, 0.12);
-  --code-bg: #0d131f;
+  --warn-bg: rgba(245, 158, 11, 0.14);
+  --bad: #f43f5e;
+  --bad-bg: rgba(244, 63, 94, 0.14);
+  --code-bg: #0c0d14;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
-  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+}
+
+/* 2. Cyber Indigo (Linear / Raycast) */
+[data-theme="indigo"] {
+  --bg: #090a16;
+  --bg-surface: #101226;
+  --bg-card: #151833;
+  --bg-card-hover: #1c2144;
+  --fg: #f1f5f9;
+  --fg-muted: #94a3b8;
+  --fg-subtle: #64748b;
+  --border: #232850;
+  --border-focus: #6366f1;
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-glow: rgba(99, 102, 241, 0.18);
+  --accent: #ec4899;
+  --ok: #10b981;
+  --ok-bg: rgba(16, 185, 129, 0.14);
+  --warn: #f59e0b;
+  --warn-bg: rgba(245, 158, 11, 0.14);
+  --bad: #f43f5e;
+  --bad-bg: rgba(244, 63, 94, 0.14);
+  --code-bg: #0b0c1c;
+  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+}
+
+/* 3. Neo Emerald (Supabase / Terminal) */
+[data-theme="emerald"] {
+  --bg: #050906;
+  --bg-surface: #0a130e;
+  --bg-card: #101d15;
+  --bg-card-hover: #16291e;
+  --fg: #f0fdf4;
+  --fg-muted: #86a793;
+  --fg-subtle: #526f5d;
+  --border: #1a3625;
+  --border-focus: #10b981;
+  --primary: #10b981;
+  --primary-light: #34d399;
+  --primary-glow: rgba(16, 185, 129, 0.18);
+  --accent: #06b6d4;
+  --ok: #10b981;
+  --ok-bg: rgba(16, 185, 129, 0.14);
+  --warn: #f59e0b;
+  --warn-bg: rgba(245, 158, 11, 0.14);
+  --bad: #f43f5e;
+  --bad-bg: rgba(244, 63, 94, 0.14);
+  --code-bg: #070e0a;
+  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+}
+
+/* 4. Clean Editorial Light */
+[data-theme="light"] {
+  --bg: #fafafa;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f4f4f5;
+  --fg: #18181b;
+  --fg-muted: #52525b;
+  --fg-subtle: #a1a1aa;
+  --border: #e4e4e7;
+  --border-focus: #ea580c;
+  --primary: #ea580c;
+  --primary-light: #f97316;
+  --primary-glow: rgba(234, 88, 12, 0.12);
+  --accent: #7c3aed;
+  --ok: #059669;
+  --ok-bg: #ecfdf5;
+  --warn: #d97706;
+  --warn-bg: #fffbeb;
+  --bad: #dc2626;
+  --bad-bg: #fef2f2;
+  --code-bg: #f4f4f5;
+  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
 }
 
 @media (prefers-color-scheme: light) {
-  :root {
-    --bg: #f8fafc;
+  :root:not([data-theme]) {
+    --bg: #fafafa;
     --bg-surface: #ffffff;
     --bg-card: #ffffff;
-    --bg-card-hover: #f1f5f9;
-    --fg: #0f172a;
-    --fg-muted: #475569;
-    --fg-subtle: #94a3b8;
-    --border: #e2e8f0;
-    --border-focus: #2563eb;
-    --primary: #2563eb;
-    --primary-light: #3b82f6;
-    --primary-glow: rgba(37, 99, 235, 0.1);
+    --bg-card-hover: #f4f4f5;
+    --fg: #18181b;
+    --fg-muted: #52525b;
+    --fg-subtle: #a1a1aa;
+    --border: #e4e4e7;
+    --border-focus: #ea580c;
+    --primary: #ea580c;
+    --primary-light: #f97316;
+    --primary-glow: rgba(234, 88, 12, 0.12);
     --accent: #7c3aed;
     --ok: #059669;
     --ok-bg: #ecfdf5;
@@ -56,7 +134,7 @@
     --warn-bg: #fffbeb;
     --bad: #dc2626;
     --bad-bg: #fef2f2;
-    --code-bg: #f1f5f9;
+    --code-bg: #f4f4f5;
     --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
   }
 }
@@ -591,6 +669,45 @@ pre.code-block {
   color: #cbd5e1;
 }
 
+/* Palette Switcher Component */
+.palette-picker {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  gap: 8px;
+}
+.palette-btns {
+  display: flex;
+  gap: 6px;
+}
+.palette-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+.palette-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--fg);
+}
+.palette-btn.active {
+  background: var(--primary-glow);
+  border-color: var(--primary);
+  color: var(--primary-light);
+}
+
 footer {
   border-top: 1px solid var(--border);
   padding: 30px 20px;
@@ -604,7 +721,18 @@ footer {
 
 <header class="hero">
   <div class="hero-inner">
-    <div class="badge-hero"><span class="pulse-dot"></span> Composio AI Product Ops · Research Pipeline & Benchmark</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:10px">
+      <div class="badge-hero"><span class="pulse-dot"></span> Composio AI Product Ops · Research Pipeline & Benchmark</div>
+      <div class="palette-picker">
+        <span style="font-size:11px;font-weight:700;color:var(--fg-subtle);letter-spacing:0.04em;text-transform:uppercase">Palette:</span>
+        <div class="palette-btns">
+          <button class="palette-btn active" data-theme-btn="composio"><span style="color:#f97316">●</span> Sunset</button>
+          <button class="palette-btn" data-theme-btn="indigo"><span style="color:#818cf8">●</span> Indigo</button>
+          <button class="palette-btn" data-theme-btn="emerald"><span style="color:#34d399">●</span> Emerald</button>
+          <button class="palette-btn" data-theme-btn="light"><span style="color:#a1a1aa">●</span> Light</button>
+        </div>
+      </div>
+    </div>
     <h1>Can 100 Apps Become AI Agent Toolkits?</h1>
     <p class="hero-sub">Autonomous research across 10 software categories. Adversarial verification loop, ground-truth human sampling ($n=20$), and buildability categorization.</p>
     <div class="meta-pills">
@@ -1353,6 +1481,16 @@ if (!R.length) {
     navigator.clipboard.writeText(machineText).then(() => {
       $('copy-llm-btn').textContent = '✅ Copied!';
       setTimeout(() => $('copy-llm-btn').textContent = '📋 Copy llms.txt', 2000);
+    });
+  });
+
+  /* Theme Palette Switcher */
+  document.querySelectorAll('[data-theme-btn]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const th = btn.dataset.themeBtn;
+      document.documentElement.setAttribute('data-theme', th);
+      document.querySelectorAll('[data-theme-btn]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     });
   });
 }
