@@ -8,10 +8,10 @@
 <meta name="referrer" content="no-referrer">
 <title>Composio AI Product Ops · 100-App Toolkit Research & Verification</title>
 <style>
-/* ─── PALETTES: 4 SELECTABLE SCHEMES ─── */
+/* ─── THEMES: SUNSET (DARK) & LIGHT ─── */
 
-/* 1. Default: Composio Sunset Obsidian */
-:root, [data-theme="composio"] {
+/* Sunset Obsidian Dark (Default) */
+:root, [data-theme="dark"], [data-theme="sunset"] {
   --bg: #090a0f;
   --bg-surface: #11131c;
   --bg-card: #151824;
@@ -38,57 +38,7 @@
   --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
 }
 
-/* 2. Cyber Indigo (Linear / Raycast) */
-[data-theme="indigo"] {
-  --bg: #090a16;
-  --bg-surface: #101226;
-  --bg-card: #151833;
-  --bg-card-hover: #1c2144;
-  --fg: #f1f5f9;
-  --fg-muted: #94a3b8;
-  --fg-subtle: #64748b;
-  --border: #232850;
-  --border-focus: #6366f1;
-  --primary: #6366f1;
-  --primary-light: #818cf8;
-  --primary-glow: rgba(99, 102, 241, 0.18);
-  --accent: #ec4899;
-  --ok: #10b981;
-  --ok-bg: rgba(16, 185, 129, 0.14);
-  --warn: #f59e0b;
-  --warn-bg: rgba(245, 158, 11, 0.14);
-  --bad: #f43f5e;
-  --bad-bg: rgba(244, 63, 94, 0.14);
-  --code-bg: #0b0c1c;
-  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
-}
-
-/* 3. Neo Emerald (Supabase / Terminal) */
-[data-theme="emerald"] {
-  --bg: #050906;
-  --bg-surface: #0a130e;
-  --bg-card: #101d15;
-  --bg-card-hover: #16291e;
-  --fg: #f0fdf4;
-  --fg-muted: #86a793;
-  --fg-subtle: #526f5d;
-  --border: #1a3625;
-  --border-focus: #10b981;
-  --primary: #10b981;
-  --primary-light: #34d399;
-  --primary-glow: rgba(16, 185, 129, 0.18);
-  --accent: #06b6d4;
-  --ok: #10b981;
-  --ok-bg: rgba(16, 185, 129, 0.14);
-  --warn: #f59e0b;
-  --warn-bg: rgba(245, 158, 11, 0.14);
-  --bad: #f43f5e;
-  --bad-bg: rgba(244, 63, 94, 0.14);
-  --code-bg: #070e0a;
-  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
-}
-
-/* 4. Clean Editorial Light */
+/* Clean Editorial Light */
 [data-theme="light"] {
   --bg: #fafafa;
   --bg-surface: #ffffff;
@@ -669,43 +619,33 @@ pre.code-block {
   color: #cbd5e1;
 }
 
-/* Palette Switcher Component */
-.palette-picker {
-  display: inline-flex;
-  align-items: center;
+/* Theme Toggle Button */
+.theme-toggle-btn {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  padding: 6px 10px;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow);
-  gap: 8px;
-}
-.palette-btns {
-  display: flex;
-  gap: 6px;
-}
-.palette-btn {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  color: var(--fg-muted);
-  font-size: 11.5px;
+  color: var(--fg);
+  font-size: 12.5px;
   font-weight: 600;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  border-radius: 999px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  transition: all 0.15s ease;
+  gap: 8px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+  user-select: none;
 }
-.palette-btn:hover {
+.theme-toggle-btn:hover {
   background: var(--bg-card-hover);
-  color: var(--fg);
+  border-color: var(--border-focus);
 }
-.palette-btn.active {
-  background: var(--primary-glow);
-  border-color: var(--primary);
-  color: var(--primary-light);
+.theme-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: inline-block;
 }
 
 footer {
@@ -721,17 +661,13 @@ footer {
 
 <header class="hero">
   <div class="hero-inner">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:12px">
       <div class="badge-hero"><span class="pulse-dot"></span> Composio AI Product Ops · Research Pipeline & Benchmark</div>
-      <div class="palette-picker">
-        <span style="font-size:11px;font-weight:700;color:var(--fg-subtle);letter-spacing:0.04em;text-transform:uppercase">Palette:</span>
-        <div class="palette-btns">
-          <button class="palette-btn active" data-theme-btn="composio"><span style="color:#f97316">●</span> Sunset</button>
-          <button class="palette-btn" data-theme-btn="indigo"><span style="color:#818cf8">●</span> Indigo</button>
-          <button class="palette-btn" data-theme-btn="emerald"><span style="color:#34d399">●</span> Emerald</button>
-          <button class="palette-btn" data-theme-btn="light"><span style="color:#a1a1aa">●</span> Light</button>
-        </div>
-      </div>
+      <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+        <span class="theme-dot"></span>
+        <span id="theme-icon">🌙</span>
+        <span id="theme-label">Sunset Dark</span>
+      </button>
     </div>
     <h1>Can 100 Apps Become AI Agent Toolkits?</h1>
     <p class="hero-sub">Autonomous research across 10 software categories. Adversarial verification loop, ground-truth human sampling ($n=20$), and buildability categorization.</p>
@@ -1484,14 +1420,25 @@ if (!R.length) {
     });
   });
 
-  /* Theme Palette Switcher */
-  document.querySelectorAll('[data-theme-btn]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const th = btn.dataset.themeBtn;
-      document.documentElement.setAttribute('data-theme', th);
-      document.querySelectorAll('[data-theme-btn]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
+  /* Theme Toggle (Sunset Dark vs Clean Light) */
+  const themeToggle = $('theme-toggle');
+  const themeIcon = $('theme-icon');
+  const themeLabel = $('theme-label');
+
+  const setTheme = (mode) => {
+    document.documentElement.setAttribute('data-theme', mode);
+    if (mode === 'light') {
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light Mode';
+    } else {
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Sunset Dark';
+    }
+  };
+
+  themeToggle.addEventListener('click', () => {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    setTheme(isLight ? 'sunset' : 'light');
   });
 }
 
