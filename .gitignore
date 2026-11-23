@@ -12,3 +12,4 @@ generate_demo.py
 .env.example
 human_check.csv
 verification.json
+*.zip
