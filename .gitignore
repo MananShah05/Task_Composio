@@ -7,3 +7,8 @@ smoke.json
 scratch/
 .vscode/
 *.md
+sample_check.py
+generate_demo.py
+.env.example
+human_check.csv
+verification.json
