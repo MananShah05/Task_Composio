@@ -6,7 +6,7 @@ index.html.bak
 smoke.json
 scratch/
 .vscode/
-*.md
+composio_takehome_prompt.md
 sample_check.py
 generate_demo.py
 .env.example
