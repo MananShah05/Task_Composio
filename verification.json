@@ -1,0 +1,108 @@
+{
+ "n": 20,
+ "fields": {
+  "auth": {
+   "pass1": 0.85,
+   "final": 1.0
+  },
+  "self_serve": {
+   "pass1": 0.8,
+   "final": 1.0
+  },
+  "buildable": {
+   "pass1": 0.9,
+   "final": 1.0
+  },
+  "existing_mcp": {
+   "pass1": 0.95,
+   "final": 1.0
+  }
+ },
+ "misses": [
+  {
+   "app": "Zendesk",
+   "field": "auth",
+   "agent": "api_key,oauth2",
+   "truth": "api_key,basic,oauth2",
+   "url": "",
+   "root_cause": "first-pass imprecision"
+  },
+  {
+   "app": "Twilio",
+   "field": "auth",
+   "agent": "none",
+   "truth": "api_key,basic",
+   "url": "",
+   "root_cause": "first-pass imprecision"
+  },
+  {
+   "app": "Harvest",
+   "field": "auth",
+   "agent": "bearer_token",
+   "truth": "bearer_token,oauth2",
+   "url": "",
+   "root_cause": "first-pass imprecision"
+  },
+  {
+   "app": "Vercel",
+   "field": "self_serve",
+   "agent": "trial",
+   "truth": "yes",
+   "url": "",
+   "root_cause": "first-pass imprecision"
+  },
+  {
+   "app": "Harvest",
+   "field": "self_serve",
+   "agent": "partner_gated",
+   "truth": "yes",
+   "url": "",
+   "root_cause": "first-pass imprecision"
+  },
+  {
+   "app": "Paygent Connect",
+   "field": "self_serve",
+   "agent": "yes",
+   "truth": "unknown",
+   "url": "",
+   "root_cause": "first-pass imprecision"
+  },
+  {
+   "app": "YouTube Transcript",
+   "field": "self_serve",
+   "agent": "unknown",
+   "truth": "yes",
+   "url": "",
+   "root_cause": "first-pass imprecision"
+  },
+  {
+   "app": "Podio",
+   "field": "buildable",
+   "agent": "no",
+   "truth": "yes",
+   "url": "",
+   "root_cause": "first-pass imprecision"
+  },
+  {
+   "app": "Klaviyo",
+   "field": "buildable",
+   "agent": "no",
+   "truth": "yes",
+   "url": "",
+   "root_cause": "first-pass imprecision"
+  },
+  {
+   "app": "Harvest",
+   "field": "existing_mcp",
+   "agent": "unknown",
+   "truth": "none",
+   "url": "",
+   "root_cause": "first-pass imprecision"
+  }
+ ],
+ "verifier_stats": {
+  "total_apps": 100,
+  "fields_caught": 40,
+  "human_flagged_rows": 38
+ }
+}

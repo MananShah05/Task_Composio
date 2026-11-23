@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Strict CSP: inline script needed (data embedded). No network, frames, forms. -->
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Toolkit Research Case Study — Composio</title>
+<style>
+:root{
+  --bg:#fff;--fg:#14171f;--mut:#5d6575;--line:#e3e6ec;
+  --acc:#3b5bdb;--acc2:#1864ab;--ok:#2b8a3e;--warn:#e67700;--bad:#c92a2a;
+  --card:#f6f7fa;--navy:#1c2b4b;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0f1218;--fg:#e8eaf0;--mut:#9aa3b5;--line:#272c38;
+  --acc:#7b93ff;--acc2:#74c0fc;--card:#171b24;--navy:#1c2b4b;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 system-ui,-apple-system,sans-serif}
+a{color:var(--acc)}a:hover{color:var(--acc2)}
+main{max-width:1140px;margin:0 auto;padding:28px 16px 100px}
+/* nav */
+nav{background:var(--navy);position:sticky;top:0;z-index:100;padding:0 16px}
+nav ul{list-style:none;display:flex;gap:4px;margin:0;padding:0;flex-wrap:wrap}
+nav li a{display:block;color:#cbd5f0;text-decoration:none;padding:10px 12px;font-size:13px;border-radius:4px 4px 0 0}
+nav li a:hover,nav li.active a{background:var(--bg);color:var(--fg)}
+/* headings */
+h1{font-size:30px;margin:0 0 4px;line-height:1.2}
+h2{font-size:20px;margin:48px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+h3{font-size:16px;margin:24px 0 8px}
+.sub{color:var(--mut);font-size:14px}
+/* grid + cards */
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:16px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+.big{font-size:36px;font-weight:800;line-height:1}
+.label{font-size:12px;color:var(--mut);margin-top:4px}
+/* bars */
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin:4px 0 10px}
+.bar>i{display:block;height:100%;background:var(--acc);border-radius:5px}
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border-bottom:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{position:sticky;top:40px;background:var(--bg);font-weight:600;white-space:nowrap}
+.wrap{max-height:600px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+/* tags + verdict */
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;background:var(--card);border:1px solid var(--line)}
+.yes{color:var(--ok)}.partial{color:var(--warn)}.no{color:var(--bad)}
+.hf{color:var(--warn);font-size:12px}
+/* controls */
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+input,select{padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);font-size:13px}
+input{width:200px}
+/* flow diagram */
+.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:16px 0}
+.flow .card{flex:1;min-width:155px;position:relative}
+.flow .card::after{content:"→";position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:18px}
+.flow .card:last-child::after{display:none}
+/* matrix */
+.matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+.matrix .col{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.col-head{padding:10px 12px;font-weight:700;font-size:13px;text-align:center}
+.tier-now   .col-head{background:#d3f9d8;color:#1a7a2e}
+.tier-oauth .col-head{background:#fff3bf;color:#7d5a00}
+.tier-reach .col-head{background:#ffe8cc;color:#8b3700}
+.tier-skip  .col-head{background:#f1f3f5;color:#495057}
+@media(prefers-color-scheme:dark){
+  .tier-now   .col-head{background:#1a3d22;color:#8ce99a}
+  .tier-oauth .col-head{background:#3d3000;color:#ffd043}
+  .tier-reach .col-head{background:#3d1f00;color:#ffa94d}
+  .tier-skip  .col-head{background:#1c1f26;color:#868e96}
+}
+.col ul{list-style:none;margin:0;padding:8px 10px;font-size:12px}
+.col li{padding:3px 0;border-bottom:1px solid var(--line)}
+.col li:last-child{border-bottom:none}
+/* misc */
+.empty{border:2px dashed var(--line);border-radius:10px;padding:28px;color:var(--mut);text-align:center}
+pre{background:var(--card);padding:14px;border-radius:8px;overflow:auto;font-size:12px;tab-size:2}
+code{font-size:12px;background:var(--card);padding:1px 5px;border-radius:4px}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.badge-ok{background:#d3f9d8;color:#1a7a2e}.badge-warn{background:#fff3bf;color:#7d5a00}.badge-bad{background:#ffe3e3;color:#9b1c1c}
+@media(prefers-color-scheme:dark){
+  .badge-ok{background:#1a3d22;color:#8ce99a}.badge-warn{background:#3d3000;color:#ffd043}.badge-bad{background:#3d1010;color:#ffa8a8}
+}
+.chip{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;margin:1px}
+.chip-oauth{background:#dbe4ff;color:#1c3fa8}.chip-apikey{background:#e3fafc;color:#0b7285}
+.chip-none{background:#f1f3f5;color:#495057}
+@media(prefers-color-scheme:dark){
+  .chip-oauth{background:#1c2d6b;color:#91a7ff}.chip-apikey{background:#0d2d33;color:#66d9e8}
+  .chip-none{background:#1c1f26;color:#868e96}
+}
+details summary{cursor:pointer;user-select:none;font-size:12px;color:var(--mut)}
+details[open] summary{margin-bottom:6px}
+.details-row{font-size:12px;line-height:1.5}
+</style></head><body>
+
+<nav><ul>
+  <li><a href="#patterns">Patterns</a></li>
+  <li><a href="#table">100 Apps</a></li>
+  <li><a href="#matrix">Build Order</a></li>
+  <li><a href="#agent">The Agent</a></li>
+  <li><a href="#proof">Proof</a></li>
+  <li><a href="#verification">Verification</a></li>
+  <li><a href="#failures">Failures</a></li>
+  <li><a href="#machines">For Machines</a></li>
+</ul></nav>
+
+<main>
+<h1>Can 100 apps become agent toolkits?</h1>
+<div class="sub">Composio AI Product Ops take-home · agent-researched · verifier-checked · human-sampled</div>
+
+<!-- ══════════════════════════════════════════════════
+     §1 HEADLINE PATTERNS
+════════════════════════════════════════════════════ -->
+<h2 id="patterns">1. Headline patterns</h2>
+<div id="patterns-box"></div>
+
+<!-- ══════════════════════════════════════════════════
+     §2 FINDINGS TABLE
+════════════════════════════════════════════════════ -->
+<h2 id="table">2. Findings table</h2>
+<div id="tablebox"></div>
+
+<!-- ══════════════════════════════════════════════════
+     §3 BUILD-ORDER MATRIX
+════════════════════════════════════════════════════ -->
+<h2 id="matrix">3. Build-order matrix</h2>
+<div class="sub" style="margin-bottom:12px">Prioritised tiers based on self-serve access, API breadth, and existing MCP coverage.</div>
+<div id="matrix-box"></div>
+
+<!-- ══════════════════════════════════════════════════
+     §4 THE AGENT
+════════════════════════════════════════════════════ -->
+<h2 id="agent">4. The agent</h2>
+<div class="flow">
+  <div class="card"><b>Pass 1 · Draft</b><div class="sub" style="margin-top:6px">Web search + fetch official docs → structured JSON row: auth, access, API, MCP, verdict, evidence URLs.</div></div>
+  <div class="card"><b>Pass 2 · Verify</b><div class="sub" style="margin-top:6px">Separate adversarial agent re-opens each evidence URL and searches for contradicting docs. Marks fields ok / wrong / unverifiable.</div></div>
+  <div class="card"><b>Revise</b><div class="sub" style="margin-top:6px">Wrong fields returned to researcher with specific objections. One round of re-research per disputed field.</div></div>
+  <div class="card"><b>Human flag</b><div class="sub" style="margin-top:6px">Still-disputed or low-confidence rows get <code>needs_human=true</code>. 20-app stratified sample hand-checked for scoring.</div></div>
+</div>
+<h3>Tools & security</h3>
+<ul class="sub" style="font-size:13px;line-height:1.9">
+  <li><b>Read-only tools only</b> — web_search + fetch. No shell, no write, no send tools.</li>
+  <li><b>Prompt injection defence</b> — fetched content labelled as UNTRUSTED DATA in every prompt; injection attempts flagged automatically.</li>
+  <li><b>Schema validation</b> — every field coerced to allowlists; HTML stripped; key-shaped strings redacted; only https:// evidence URLs kept.</li>
+  <li><b>SSRF guard</b> — model-chosen URLs rejected if non-https, private IP, localhost, or cloud-metadata host.</li>
+  <li><b>Composio MCP</b> — optional; plugs in as a read-only toolkit via <code>COMPOSIO_MCP_URL</code>. Zero impact if not set.</li>
+  <li><b>Atomic writes</b> — results saved with <code>os.replace</code> so a crash never leaves a half-written file.</li>
+  <li><b>Resumable</b> — already-processed IDs are skipped on restart.</li>
+</ul>
+<div id="agent-stats"></div>
+
+<!-- ══════════════════════════════════════════════════
+     §5 PROOF / REPO
+════════════════════════════════════════════════════ -->
+<h2 id="proof">5. Proof</h2>
+<pre>
+# 1. Install
+pip install anthropic
+
+# 2. Set secrets (never commit)
+cp .env.example .env
+# edit .env: add ANTHROPIC_API_KEY (and optionally COMPOSIO_API_KEY + COMPOSIO_MCP_URL)
+
+# 3. Smoke test (5 apps)
+python agent.py --limit 5 --out smoke.json
+
+# 4. Full run (all 100, resumable)
+python agent.py --out results.json
+
+# 5. Dead-link check
+python check_links.py results.json          # → link_check.json
+
+# 6. Human sample
+python sample_check.py make                 # → human_check.csv
+# open docs by hand, fill *_human + human_evidence_url + root_cause
+python sample_check.py score                # → verification.json
+
+# 7. Build page
+python build.py                             # → index.html
+</pre>
+<p>Repo contains: <code>apps.csv</code>, <code>agent.py</code>, <code>sample_check.py</code>,
+<code>check_links.py</code>, <code>build.py</code>, <code>template.html</code>,
+<code>SECURITY.md</code>, <code>.env.example</code>, <code>.gitignore</code>.
+Deploy <code>index.html</code> + <code>results.json</code> to any static host
+(Vercel, Netlify, GitHub Pages).</p>
+<div id="link-check-box"></div>
+
+<!-- ══════════════════════════════════════════════════
+     §6 VERIFICATION
+════════════════════════════════════════════════════ -->
+<h2 id="verification">6. Verification</h2>
+<div id="verif"></div>
+
+<!-- ══════════════════════════════════════════════════
+     §7 WHERE IT FAILED
+════════════════════════════════════════════════════ -->
+<h2 id="failures">7. Where it failed</h2>
+<div id="fails"></div>
+
+<!-- ══════════════════════════════════════════════════
+     §8 FOR MACHINES
+════════════════════════════════════════════════════ -->
+<h2 id="machines">8. For machines</h2>
+<p>All findings are embedded in a <code>&lt;script type="application/json"&gt;</code> block below
+and also available as a standalone <a href="results.json" rel="noopener noreferrer">results.json</a> file.</p>
+<pre id="llms-txt"></pre>
+
+</main>
+
+<!-- Embedded data — escaped at build time by build.py (js_safe). -->
+<script>
+const D=/*DATA*/null;
+
+/* ══════════════════════════════════════════════════
+   SECURITY: all agent- and web-derived data is UNTRUSTED.
+   Escape every string once up-front before any innerHTML.
+   Only https:// links pass safe(). ══════════════════ */
+const clean=v=>{
+  if(typeof v==="string")return v.replace(/[&<>"'`]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","`":"&#96;"}[c]));
+  if(Array.isArray(v))return v.map(clean);
+  if(v&&typeof v==="object")return Object.fromEntries(Object.entries(v).map(([k,x])=>[k,clean(x)]));
+  return v;
+};
+const safe=u=>/^https:\/\//i.test(u)&&!/[\s"'<>]/.test(u)?u:"#";
+const esc=s=>String(s??'').replace(/[&<>"'`]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","`":"&#96;"}[c]));
+
+const R=clean((D&&D.results)||[]);
+const V=clean(D&&D.verification);
+const LC=D&&D.link_check;
+const $=id=>document.getElementById(id);
+const arr=x=>Array.isArray(x)?x:(x?[x]:[]);
+const first=s=>String(s||'unknown').toLowerCase().split(/[ (]/)[0];
+const F=r=>r.final||{};
+
+function count(fn){
+  const m={};
+  R.forEach(r=>fn(r).forEach(k=>{if(k)m[k]=(m[k]||0)+1}));
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]);
+}
+function barCard(title,entries,n,note){
+  const rows=entries.slice(0,8).map(([k,v])=>
+    `<div style="display:flex;justify-content:space-between;font-size:13px"><span>${esc(k)}</span><span class="sub">${v}</span></div>
+     <div class="bar"><i style="width:${Math.round(100*v/n)}%"></i></div>`
+  ).join('');
+  return `<div class="card"><b>${esc(title)}</b>${note?`<div class="sub" style="font-size:12px;margin-bottom:6px">${esc(note)}</div>`:''}${rows}</div>`;
+}
+
+/* ── §1 PATTERNS ── */
+if(!R.length){
+  ['patterns-box','tablebox','matrix-box','verif','fails'].forEach(id=>
+    $(id).innerHTML='<div class="empty">No results yet. Run <code>python agent.py</code> then <code>python build.py</code>.</div>');
+}else{
+  const n=R.length;
+  const authE   =count(r=>arr(F(r).auth).map(first));
+  const ssE     =count(r=>[first(F(r).self_serve)]);
+  const bdE     =count(r=>[first(F(r).buildable)]);
+  const blE     =count(r=>{const b=F(r).blocker;return b&&first(b)!='none'?[String(b).split(/[.,!]/)[0].trim().slice(0,55)]:[]});
+
+  const easy    =R.filter(r=>first(F(r).buildable)==='yes'&&['yes','trial'].includes(first(F(r).self_serve)));
+  const gated   =R.filter(r=>!['yes','trial','unknown'].includes(first(F(r).self_serve)));
+  const hasHuman=R.filter(r=>r.needs_human||F(r).needs_human);
+  const hasMCP  =R.filter(r=>!['none','unknown',''].includes((F(r).existing_mcp||'').toLowerCase().split(' ')[0]));
+
+  /* self-serve by category */
+  const byCat={};
+  R.forEach(r=>{const c=r.category;byCat[c]=byCat[c]||{y:0,t:0};byCat[c].t++;
+    if(['yes','trial'].includes(first(F(r).self_serve)))byCat[c].y++;});
+
+  /* OAuth2 vs API-key-only */
+  const oauthOnly=R.filter(r=>{const a=arr(F(r).auth).map(first);return a.includes('oauth2')&&!a.includes('api_key')}).length;
+  const keyOnly  =R.filter(r=>{const a=arr(F(r).auth).map(first);return a.includes('api_key')&&!a.includes('oauth2')}).length;
+  const both     =R.filter(r=>{const a=arr(F(r).auth).map(first);return a.includes('oauth2')&&a.includes('api_key')}).length;
+
+  $('patterns-box').innerHTML=`
+  <div class="grid">
+    <div class="card"><div class="big yes">${easy.length}</div><div class="label">Easy wins: self-serve + buildable now</div></div>
+    <div class="card"><div class="big no">${gated.length}</div><div class="label">Gated: paid / approval / partner / sales</div></div>
+    <div class="card"><div class="big warn" style="color:var(--warn)">${hasHuman.length}</div><div class="label">Rows flagged for human review</div></div>
+    <div class="card"><div class="big" style="color:var(--acc)">${hasMCP.length}</div><div class="label">Already have an MCP server</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+    <div class="card"><b>Auth split</b>
+      <div style="margin-top:8px;font-size:13px">
+        <span class="chip chip-oauth">OAuth2 only ${oauthOnly}</span>
+        <span class="chip chip-apikey">API key only ${keyOnly}</span>
+        <span class="chip chip-none">Both ${both}</span>
+      </div>
+    </div>
+    ${barCard('Auth methods',authE,n)}
+    ${barCard('Self-serve vs gated',ssE,n)}
+    ${barCard('Buildability',bdE,n)}
+    ${barCard('Top blockers',blE,n)}
+  </div>
+  <div class="card" style="margin-top:14px"><b>Self-serve share by category</b>
+    <div style="margin-top:10px">
+    ${Object.entries(byCat).sort((a,b)=>b[1].y/b[1].t-a[1].y/a[1].t).map(([c,v])=>
+      `<div style="display:flex;justify-content:space-between;font-size:13px"><span>${esc(c)}</span><span class="sub">${v.y}/${v.t}</span></div>
+       <div class="bar"><i style="width:${Math.round(100*v.y/v.t)}%"></i></div>`).join('')}
+    </div>
+  </div>`;
+
+  /* ── §2 TABLE ── */
+  const cats=[...new Set(R.map(r=>r.category))].sort();
+  $('tablebox').innerHTML=`
+  <div class="controls">
+    <input id="q" placeholder="filter…" autocomplete="off">
+    <select id="cat"><option value="">all categories</option>${cats.map(c=>`<option>${esc(c)}</option>`).join('')}</select>
+    <select id="bf"><option value="">any verdict</option><option>yes</option><option>partial</option><option>no</option></select>
+    <select id="ss"><option value="">any access</option><option>yes</option><option>trial</option><option>paid_required</option><option>partner_gated</option><option>contact_sales</option></select>
+    <a href="results.json" rel="noopener noreferrer" style="margin-left:auto;font-size:13px">↓ raw JSON</a>
+  </div>
+  <div class="wrap"><table>
+    <thead><tr><th>#</th><th>App</th><th>Category</th><th>Auth</th><th>Access</th><th>API</th><th>MCP</th><th>Verdict</th><th>Blocker</th><th>Evidence</th></tr></thead>
+    <tbody id="tb"></tbody>
+  </table></div>
+  <div id="row-count" class="sub" style="margin-top:6px;font-size:12px"></div>`;
+
+  const draw=()=>{
+    const q=$('q').value.toLowerCase(),c=$('cat').value,b=$('bf').value,s=$('ss').value;
+    const filtered=R.filter(r=>
+      (!c||r.category===c)&&
+      (!b||first(F(r).buildable)===b)&&
+      (!s||first(F(r).self_serve)===s)&&
+      (!q||JSON.stringify(r).toLowerCase().includes(q))
+    );
+    $('row-count').textContent=`Showing ${filtered.length} of ${n} apps`;
+    $('tb').innerHTML=filtered.map(r=>{
+      const f=F(r);
+      if(f._error)return `<tr><td>${r.id}</td><td>${esc(r.app)}</td><td colspan=8 class="no">agent failed: ${esc(f._error)}</td></tr>`;
+      const bv=first(f.buildable);
+      const authTags=arr(f.auth).map(a=>`<span class="tag">${esc(a)}</span>`).join(' ');
+      const evLinks=arr(f.evidence).slice(0,3).map((u,i)=>`<a href="${safe(u)}" target="_blank" rel="noopener noreferrer nofollow">doc${i+1}</a>`).join(' ');
+      const hflag=r.needs_human?` <span class="hf" title="needs human review">⚑</span>`:'';
+      /* expandable row detail */
+      const detail=`<details><summary>details</summary><div class="details-row">
+        <b>one_liner:</b> ${esc(f.one_liner||'')} &nbsp;
+        <b>auth_notes:</b> ${esc(f.auth_notes||'')} &nbsp;
+        <b>self_serve_notes:</b> ${esc(f.self_serve_notes||'')} &nbsp;
+        <b>api_notes:</b> ${esc(f.api_notes||'')} &nbsp;
+        <b>rate_limits:</b> ${esc(f.rate_limits||'')} &nbsp;
+        <b>webhooks:</b> ${esc(f.webhooks||'')} &nbsp;
+        <b>sandbox:</b> ${esc(f.sandbox_mode||'')} &nbsp;
+        <b>pricing:</b> ${esc(f.pricing_note||'')} &nbsp;
+        <b>sdks:</b> ${esc(f.sdk_languages||'')} &nbsp;
+        <b>docs_updated:</b> ${esc(f.docs_last_updated||'')} &nbsp;
+        <b>confidence:</b> ${esc(f.confidence||'')}
+      </div></details>`;
+      return `<tr>
+        <td>${r.id}</td>
+        <td><b>${esc(r.app)}</b>${hflag}${detail}</td>
+        <td>${esc(r.category)}</td>
+        <td>${authTags}</td>
+        <td><span class="${bv==='yes'?'yes':bv==='partial'?'partial':'no'}">${esc(first(f.self_serve)||'')}</span></td>
+        <td>${esc(arr(f.api_type).join(', '))} · ${esc(f.api_breadth||'')}</td>
+        <td>${esc(f.existing_mcp||'')}</td>
+        <td class="${bv}">${esc(bv)}${hflag}</td>
+        <td>${esc(f.blocker||'')}</td>
+        <td>${evLinks}</td>
+      </tr>`;
+    }).join('');
+  };
+  ['q','cat','bf','ss'].forEach(id=>$(id).addEventListener('input',draw));
+  draw();
+
+  /* ── §3 BUILD-ORDER MATRIX ── */
+  const tierNow  =R.filter(r=>first(F(r).buildable)==='yes'&&['yes','trial'].includes(first(F(r).self_serve))&&!['official','community'].includes(first(F(r).existing_mcp||'')));
+  const tierOAuth=R.filter(r=>first(F(r).buildable)==='yes'&&['yes','trial'].includes(first(F(r).self_serve))&&['official','community'].includes(first(F(r).existing_mcp||'')));
+  const tierReach=R.filter(r=>['partner_gated','contact_sales','admin_approval'].includes(first(F(r).self_serve)));
+  const tierSkip =R.filter(r=>first(F(r).buildable)==='no'||['cli','none'].includes(first(arr(F(r).api_type)[0])));
+
+  const colHtml=(label,cssClass,items)=>`
+  <div class="col ${cssClass}">
+    <div class="col-head">${esc(label)} <span style="font-weight:400;font-size:12px">(${items.length})</span></div>
+    <ul>${items.slice(0,20).map(r=>`<li>${esc(r.app)}</li>`).join('')}${items.length>20?`<li>…+${items.length-20} more</li>`:''}</ul>
+  </div>`;
+
+  $('matrix-box').innerHTML=`<div class="matrix">
+    ${colHtml('🟢 Build now',   'tier-now',  tierNow)}
+    ${colHtml('🟡 Needs OAuth app review','tier-oauth',tierOAuth)}
+    ${colHtml('🟠 Needs outreach','tier-reach',tierReach)}
+    ${colHtml('⛔ Skip / CLI-only','tier-skip',tierSkip)}
+  </div>
+  <p class="sub" style="font-size:12px">Tier logic: <em>Build now</em> = self-serve + buildable + no existing MCP.
+  <em>Needs OAuth</em> = same but MCP already exists (adopt vs build decision).
+  <em>Needs outreach</em> = partner-gated or contact-sales.
+  <em>Skip</em> = no public API or CLI-only.</p>`;
+
+  /* ── §4 AGENT STATS ── */
+  const caught=R.reduce((s,r)=>s+(r._meta&&r._meta.verifier_caught||0),0);
+  const avgT=R.length?Math.round(R.reduce((s,r)=>s+(r._meta&&r._meta.elapsed||0),0)/R.length):0;
+  $('agent-stats').innerHTML=`<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:14px">
+    <div class="card"><div class="big">${caught}</div><div class="label">Fields caught by verifier</div></div>
+    <div class="card"><div class="big">${hasHuman.length}</div><div class="label">Rows sent to human</div></div>
+    <div class="card"><div class="big">${avgT}s</div><div class="label">Avg time per app</div></div>
+    <div class="card"><div class="big">${n}</div><div class="label">Apps researched</div></div>
+  </div>`;
+
+  /* ── §5 LINK CHECK ── */
+  if(LC){
+    const lcOk  =Object.values(LC).filter(s=>s==='ok').length;
+    const lcBad =Object.entries(LC).filter(([,s])=>s!=='ok');
+    $('link-check-box').innerHTML=`<div class="card" style="margin-top:14px">
+      <b>Evidence link check</b>
+      <span class="badge ${lcBad.length?'badge-warn':'badge-ok'}" style="margin-left:8px">${lcOk}/${Object.keys(LC).length} ok</span>
+      ${lcBad.length?`<details style="margin-top:8px"><summary>${lcBad.length} dead/blocked links</summary>
+        <table style="margin-top:6px">
+          ${lcBad.slice(0,30).map(([u,s])=>`<tr><td class="sub" style="font-size:11px">${esc(s)}</td><td><a href="${safe(u)}" target="_blank" rel="noopener noreferrer nofollow" style="font-size:11px;word-break:break-all">${esc(u)}</a></td></tr>`).join('')}
+        </table></details>`:'<div class="sub" style="font-size:12px;margin-top:4px">All evidence links resolve.</div>'}
+    </div>`;
+  }
+
+  /* ── §6 VERIFICATION ── */
+  if(V){
+    const flds=Object.entries(V.fields);
+    $('verif').innerHTML=`
+    <div class="grid">
+      ${flds.map(([k,v])=>`<div class="card">
+        <b>${esc(k)}</b>
+        <div style="margin-top:6px;font-size:13px">Pass 1: <span class="${v.pass1>=0.85?'yes':v.pass1>=0.7?'partial':'no'}">${Math.round(v.pass1*100)}%</span></div>
+        <div class="bar"><i style="width:${v.pass1*100}%"></i></div>
+        <div style="font-size:13px">After loops: <span class="${v.final>=0.85?'yes':v.final>=0.7?'partial':'no'}">${Math.round(v.final*100)}%</span></div>
+        <div class="bar"><i style="width:${v.final*100}%"></i></div>
+      </div>`).join('')}
+    </div>
+    <p class="sub">Hand-checked sample n=${V.n}, stratified 2 per category (seed=7).</p>
+    ${V.verifier_stats&&V.verifier_stats.fields_caught!=null?`
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+      <div class="card"><div class="big">${V.verifier_stats.fields_caught}</div><div class="label">Fields caught by verifier</div></div>
+      <div class="card"><div class="big">${V.verifier_stats.human_flagged_rows}</div><div class="label">Rows sent to human</div></div>
+    </div>`:''}`;
+  }else{
+    $('verif').innerHTML=`<div class="empty">Hand-check not run yet.
+      Run <code>python sample_check.py make</code>, fill <code>human_check.csv</code>,
+      then <code>python sample_check.py score</code>, then <code>python build.py</code>.</div>`;
+  }
+
+  /* ── §7 FAILURES ── */
+  const hardFail=R.filter(r=>F(r)._error).map(r=>r.app);
+  const injected=R.filter(r=>F(r).injection_suspected).map(r=>r.app);
+  const missTbl=V&&V.misses&&V.misses.length?`
+    <h3>Miss table (human-verified)</h3>
+    <div class="wrap"><table>
+      <thead><tr><th>App</th><th>Field</th><th>Agent said</th><th>Truth</th><th>Root cause</th><th>Proof</th></tr></thead>
+      <tbody>${V.misses.map(m=>`<tr>
+        <td>${esc(m.app)}</td><td>${esc(m.field)}</td>
+        <td class="no">${esc(m.agent)}</td><td class="yes">${esc(m.truth)}</td>
+        <td>${esc(m.root_cause||'')}</td>
+        <td>${m.url?`<a href="${safe(m.url)}" target="_blank" rel="noopener noreferrer nofollow">doc</a>`:''}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>`:'';
+  $('fails').innerHTML=`
+    <p><b>Hard fails (agent errored out):</b> ${hardFail.length?hardFail.map(esc).join(', '):'none'}</p>
+    ${injected.length?`<p><b>Injection attempts detected:</b> ${injected.map(esc).join(', ')}. Rows sent to human.</p>`:''}
+    <p class="sub">Apps that defeated the agent (blocked docs, login-walled portals, no public API, contradictory sources) are shown with low confidence and needs_human=true in the table above.</p>
+    ${missTbl||`<div class="empty">Misses listed after <code>python sample_check.py score</code>.</div>`}`;
+
+  /* ── §8 FOR MACHINES: llms.txt ── */
+  const summary=[
+    `# Toolkit Research Summary`,
+    `> ${n} apps researched across 10 categories.`,
+    `> Easy wins (build now): ${easy.length}`,
+    `> Gated (needs outreach): ${gated.length}`,
+    `> Human-flagged: ${hasHuman.length}`,
+    `> With existing MCP: ${hasMCP.length}`,
+    ``,
+    `## Auth distribution`,
+    ...authE.slice(0,6).map(([k,v])=>`- ${k}: ${v}`),
+    ``,
+    `## Top blockers`,
+    ...blE.slice(0,5).map(([k,v])=>`- ${k}: ${v}`),
+    ``,
+    `## Easy wins (build now, no existing MCP)`,
+    ...tierNow.slice(0,15).map(r=>`- ${r.app} [${r.category}]`),
+    ``,
+    `## Needs outreach`,
+    ...tierReach.slice(0,10).map(r=>`- ${r.app} [${r.category}]: ${esc(first(F(r).self_serve))}`),
+    ``,
+    `## Full data`,
+    `See embedded JSON below or results.json.`,
+  ].join('\n');
+  $('llms-txt').textContent=summary;
+}
+
+/* Machine-readable embedded JSON (also available as results.json) */
+document.write(`<script type="application/json" id="results-json">${D?JSON.stringify(D.results||[]):'{}'}<\/script>`);
+</script>
+</body></html>
